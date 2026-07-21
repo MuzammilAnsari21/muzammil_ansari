@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Muzammil Ansari | Frontend Developer Portfolio</title>
+    <meta name="description" content="Animated portfolio for Muzammil Ansari, featuring projects, services, and a live content editor." />
+    <script>
+    // Immediately apply saved theme before React loads
+    (function() {
+      const saved = localStorage.getItem('portfolio_content_v1');
+      let primary = '#83B17F';
+      
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.theme?.primary) {
+            primary = data.theme.primary;
+          }
+        } catch(e) {}
+      }
+
+      // Inject immediate CSS
+      const style = document.createElement('style');
+      style.id = 'immediate-theme';
+      style.textContent = `
+        [class*="bg-[#83B17F]"] { background-color: ${primary} !important; }
+        [class*="text-[#83B17F]"] { color: ${primary} !important; }
+        [class*="border-[#83B17F]"] { border-color: ${primary} !important; }
+        [class*="from-[#83B17F]"] { --tw-gradient-from: ${primary} !important; }
+        [class*="to-[#83B17F]"] { --tw-gradient-to: ${primary} !important; }
+        section#home { background-color: hsl(from ${primary} h s calc(l + 40%)) !important; }
+      `;
+      document.head.appendChild(style);
+    })();
+  </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
