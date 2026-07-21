@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import Lottie from "lottie-react";
-import animationData from "@/assets/loader.json"; // yeh file baad mein add karenge
+import loader from "@/assets/favicon.png";
 
 export default function Loader() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // 2.5 seconds baad hide (adjust kar sakte ho)
     const timer = setTimeout(() => {
       setIsVisible(false);
     }, 2500);
@@ -17,15 +15,35 @@ export default function Loader() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#f8f7ef] transition-opacity duration-500">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#f8f7ef] transition-opacity duration-500">
       <div className="text-center">
-        <div className="w-80 h-80 mx-auto">
-          <Lottie 
-            animationData={animationData} 
-            loop={true} 
-            autoplay={true}
-            style={{ width: '100%', height: '100%' }}
-          />
+        {/* Logo */}
+        <img
+          src={loader}
+          alt="Loading..."
+          className="w-36 h-36 md:w-44 md:h-44 mx-auto animate-pulse"
+        />
+
+        {/* Text */}
+        <h2 className="mt-6 text-3xl font-bold tracking-wide text-[#111827]">
+          MUJJI
+        </h2>
+
+        <p className="mt-2 text-gray-500 text-sm md:text-base tracking-[4px] uppercase">
+          Web Designer & Developer
+        </p>
+
+        {/* Loading dots */}
+        <div className="flex justify-center gap-2 mt-6">
+          <span className="w-3 h-3 rounded-full bg-black animate-bounce"></span>
+          <span
+            className="w-3 h-3 rounded-full bg-black animate-bounce"
+            style={{ animationDelay: "0.15s" }}
+          ></span>
+          <span
+            className="w-3 h-3 rounded-full bg-black animate-bounce"
+            style={{ animationDelay: "0.3s" }}
+          ></span>
         </div>
       </div>
     </div>
