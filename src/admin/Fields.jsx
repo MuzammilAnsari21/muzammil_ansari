@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Upload, Trash2 } from "../utils/icons.jsx";
 import { iconOptions } from "../utils/icons.jsx";
 
@@ -74,12 +75,50 @@ export function RatingField({ label, value, onChange }) {
 }
 
 export function ImageField({ label, value, onChange }) {
-  const handleFile = (e) => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onChange(reader.result);
-    reader.readAsDataURL(file);
+    setError("");
+    setUploading(true);
+    try {
+      // File ko sirf network transfer ke liye base64 mein convert karte hain.
+      // Ye kabhi bhi content.json/DB ke content column mein save NAHI hoga —
+      // upload-image function isko images table (BLOB) mein daalta hai aur
+      // sirf ek chota /api/image/<id> URL wapis milta hai.
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const base64Only = dataUrl.split(",")[1];
+
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          dataBase64: base64Only,
+          contentType: file.type,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Upload failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      onChange(data.url); // sirf chota URL save hota hai (jaise /api/image/12)
+    } catch (err) {
+      setError(err.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   };
 
   return (
@@ -98,9 +137,10 @@ export function ImageField({ label, value, onChange }) {
             className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#83B17F] focus:ring-2 focus:ring-[#83B17F]/30"
           />
           <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 py-1.5 text-xs font-medium text-slate-500 hover:border-[#83B17F] hover:text-[#5f8f5a]">
-            <Upload className="h-3.5 w-3.5" /> Upload Image
-            <input type="file" accept="image/*" className="hidden" onChange={handleFile} />
+            <Upload className="h-3.5 w-3.5" /> {uploading ? "Uploading..." : "Upload Image"}
+            <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
           </label>
+          {error && <p className="text-[11px] text-red-500">{error}</p>}
         </div>
       </div>
     </div>
@@ -116,24 +156,5 @@ export function SectionCard({ title, children, defaultOpen = false }) {
       </summary>
       <div className="space-y-4 border-t border-slate-200 p-4">{children}</div>
     </details>
-  );
-}
-
-export function ArrayItemShell({ children, onRemove, title }) {
-  return (
-    <div className="relative space-y-3 rounded-lg border border-slate-200 bg-white p-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-400">{title}</span>
-        <button
-          type="button"
-          onClick={onRemove}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-red-400 hover:bg-red-50 hover:text-red-600"
-          aria-label="Remove item"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      </div>
-      {children}
-    </div>
   );
 }

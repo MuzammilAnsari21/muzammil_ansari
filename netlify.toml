@@ -20,3 +20,9 @@
   to = "/.netlify/functions/upload-image"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/image/*"
+  to = "/.netlify/functions/image/:splat"
+  status = 200
+  force = true
