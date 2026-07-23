@@ -11,7 +11,7 @@ import TechStack from "@/components/TechStack";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AdminPanel from "@/admin/AdminPanel";
-import Loader from "@/components/Loader";
+import Loader from "@/components/loader";
 
 // Convert hex to HSL array [h, s, l]
 function hexToHsl(hex) {
