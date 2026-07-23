@@ -31,7 +31,7 @@ export default function Footer() {
             {/* Brand block */}
             <div className="max-w-sm">
               {/* Avatar pill - Dynamic Gradient */}
-              <div className="mb-5 flex items-center gap-3">
+              <div className="mb-5! flex items-center gap-3">
                 <span 
                   className="flex h-11 w-11 items-center justify-center rounded-xl font-display text-base font-extrabold text-white shadow-lg shadow-black/50"
                   style={{
